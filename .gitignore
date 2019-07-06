@@ -1,3 +1,4 @@
 .stack-work/
 data-extend-th.cabal
 *~
+.dir-locals.el

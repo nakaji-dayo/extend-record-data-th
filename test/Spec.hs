@@ -1,37 +1,42 @@
+{-# LANGUAGE DeriveGeneric         #-}
 {-# LANGUAGE DuplicateRecordFields #-}
+{-# LANGUAGE KindSignatures        #-}
 {-# LANGUAGE OverloadedLabels      #-}
 {-# LANGUAGE QuasiQuotes           #-}
 {-# LANGUAGE StandaloneDeriving    #-}
 {-# LANGUAGE TemplateHaskell       #-}
 
+import           Data.Generics.Labels
+import           Data.Generics.Product.Subtype
+import           GHC.Generics
 import           Language.Haskell.TH
+import           Lens.Micro
 import           TH
 
-data Person = Person
+data Animal = Animal
   { name :: String
   , age  :: Int
-  } deriving (Show, Eq)
+  } deriving (Show, Eq, Generic)
 
-mapM mkOptional [''Person]
-deriving instance Show Person_opt
+data HumanInfo = HumanInfo
+  { address :: String
+  } deriving (Show, Eq, Generic)
 
--- [extend|Generated { ...Person } (Show, Eq)|]
+$(extendD "data Human = Animal <> HumanInfo deriving (Show, Generic)")
 
-data Extra = Extra
-  { position :: String
-  }
+data X a = X {f1 :: a Int} deriving (Generic)
+data Y a = Y {f2 :: Maybe a} deriving (Generic, Show)
+data Z a = Z { x :: X a } deriving(Generic)
+$(extendD "data XY = X <> Y <> { e1 :: String, e2 :: String } <> Z deriving (Generic)")
 
-[unionRecord|ExtraPerson = Person Extra|]
-deriving instance Show ExtraPerson
 main :: IO ()
 main = do
-  let x = Person_opt Nothing Nothing
-  print $ x
-  -- q <- runQ [d| data X = X { name :: String } deriving (Show) |]
-  -- let y = Generated "test" 88
-  -- let z = Generated "test" 89
-  -- print y
-  -- print $ q
-  -- print $ y == z
-  let e = ExtraPerson "" 0 ""
-  print (e :: ExtraPerson)
+  let e = Human
+        { name = "daishi"
+        , age = 30
+        , address = "jp"
+        }
+  print (e :: Human)
+  print (upcast e :: Animal)
+  let xy = XY {f1 = [123], f2 = Just "test", e1="foo", e2="bar", x = X (0, 9)}
+  print $ (xy ^. #f1, xy ^. #f2, xy ^. #x . #f1)
