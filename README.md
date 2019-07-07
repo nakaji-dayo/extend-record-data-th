@@ -10,7 +10,7 @@ $(extendD "data T = T1 <> T2 <> { f1 :: T3, f2 :: T4 } deriving (c1, c2) ")
 
 ## Examples
 
-### by union exstsing record type type
+### unioning existing record data type
 
 ```
 data Animal = Animal
