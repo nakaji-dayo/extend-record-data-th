@@ -2,7 +2,12 @@
 
 TH to define a new record data type that extends the existing simple record data type.
 
-## examples
+## Syntax
+```
+$(extendD "data T = T1 <> T2 <> { f1 :: T3, f2 :: T4 } deriving (c1, c2) ")
+```
+
+## Examples
 
 ### by union exstsing record type type
 
