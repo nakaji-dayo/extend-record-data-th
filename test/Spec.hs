@@ -8,10 +8,10 @@
 
 import           Data.Generics.Labels
 import           Data.Generics.Product.Subtype
+import           Data.Record.Extend
 import           GHC.Generics
 import           Language.Haskell.TH
 import           Lens.Micro
-import           TH
 
 data Animal = Animal
   { name :: String

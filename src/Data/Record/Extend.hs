@@ -2,7 +2,7 @@
 {-# LANGUAGE OverloadedStrings   #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TemplateHaskell     #-}
-module TH where
+module Data.Record.Extend where
 
 import           Control.Applicative
 import           Control.Monad

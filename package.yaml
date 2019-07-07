@@ -1,10 +1,10 @@
-name:                data-extend-th
+name:                extend-record-data-th
 version:             0.1.0.0
-github:              "githubuser/data-extend-th"
+github:              "nakaji-dayo/extend-record-data-th"
 license:             BSD3
-author:              "Author name here"
-maintainer:          "example@example.com"
-copyright:           "2019 Author name here"
+author:              "Daishi Nakajima"
+maintainer:          "nakaji.dayo@gmail.com"
+copyright:           "2019 Daishi Nakajima"
 
 extra-source-files:
 - README.md
@@ -17,7 +17,7 @@ extra-source-files:
 # To avoid duplicated efforts in documentation and dealing with the
 # complications of embedding Haddock markup inside cabal files, it is
 # common to point users to the README.md file.
-description:         Please see the README on GitHub at <https://github.com/githubuser/data-extend-th#readme>
+description:         Please see the README on GitHub at <https://github.com/nakaji-dayo/extend-record-data-th#readme>
 
 dependencies:
 - base >= 4.7 && < 5
@@ -30,7 +30,7 @@ library:
   source-dirs: src
 
 tests:
-  data-extend-th-test:
+  extend-record-data-th-test:
     main:                Spec.hs
     source-dirs:         test
     ghc-options:
@@ -38,6 +38,6 @@ tests:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - data-extend-th
+    - extend-record-data-th
     - generic-lens
     - microlens
