@@ -2,6 +2,7 @@
 
 TH to define a new record data type that extends the existing simple record data type.
 
+This library should be useful when used with [generic-lens](http://hackage.haskell.org/package/generic-lens).
 ## Syntax
 ```
 $(extendD "data T = T1 <> T2 <> { f1 :: T3, f2 :: T4 } deriving (c1, c2) ")

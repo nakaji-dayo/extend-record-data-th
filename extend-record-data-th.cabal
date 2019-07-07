@@ -4,11 +4,13 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: c284aef5289132a749e14875855aac1c45fed6db829cdbde6fcd6b9a8ab4eb5b
+-- hash: 970f79af9d76b31e8f92261d4fa9cc7cccba38efa1983c52368998f29bba5c45
 
 name:           extend-record-data-th
 version:        0.1.0.0
+synopsis:       TH to define a new record data type that extends the existing record data type.
 description:    Please see the README on GitHub at <https://github.com/nakaji-dayo/extend-record-data-th#readme>
+category:       Data
 homepage:       https://github.com/nakaji-dayo/extend-record-data-th#readme
 bug-reports:    https://github.com/nakaji-dayo/extend-record-data-th/issues
 author:         Daishi Nakajima
