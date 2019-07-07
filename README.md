@@ -1,6 +1,6 @@
 # data-extend-th
 
-[Hackage](http://hackage.haskell.org/package/extend-record-data-th)
+[![Hackage](https://img.shields.io/hackage/v/extend-record-data-th.svg?style=flat)](http://hackage.haskell.org/package/extend-record-data-th)
 
 TH to define a new record data type that extends the existing simple record data type.
 
