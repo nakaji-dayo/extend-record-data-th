@@ -1,5 +1,7 @@
 # data-extend-th
 
+[Hackage](http://hackage.haskell.org/package/extend-record-data-th)
+
 TH to define a new record data type that extends the existing simple record data type.
 
 This library should be useful when used with [generic-lens](http://hackage.haskell.org/package/generic-lens).
