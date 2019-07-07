@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 1c42f594d07f370ea712c78c0c59b88869605c5fc6767c231384e78efbb7cee0
+-- hash: c284aef5289132a749e14875855aac1c45fed6db829cdbde6fcd6b9a8ab4eb5b
 
 name:           extend-record-data-th
 version:        0.1.0.0
@@ -35,7 +35,6 @@ library
   build-depends:
       attoparsec
     , base >=4.7 && <5
-    , syb
     , template-haskell
     , text
   default-language: Haskell2010
@@ -52,9 +51,6 @@ test-suite extend-record-data-th-test
       attoparsec
     , base >=4.7 && <5
     , extend-record-data-th
-    , generic-lens
-    , microlens
-    , syb
     , template-haskell
     , text
   default-language: Haskell2010

@@ -22,7 +22,6 @@ description:         Please see the README on GitHub at <https://github.com/naka
 dependencies:
 - base >= 4.7 && < 5
 - template-haskell
-- syb
 - attoparsec
 - text
 
@@ -39,5 +38,3 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - extend-record-data-th
-    - generic-lens
-    - microlens

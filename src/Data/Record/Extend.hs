@@ -1,55 +1,58 @@
-{-# LANGUAGE LambdaCase          #-}
 {-# LANGUAGE OverloadedStrings   #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE TemplateHaskell     #-}
-module Data.Record.Extend where
+module Data.Record.Extend
+  ( extendQQ
+  , extendD
+  ) where
 
 import           Control.Applicative
 import           Control.Monad
-import           Control.Monad.IO.Class
 import           Data.Attoparsec.Text      as P
 import           Data.Char
-import           Data.Generics
 import           Data.Maybe
-import           Data.Text                 (pack, unpack)
+import           Data.Text                 (pack)
 import           Language.Haskell.TH
 import           Language.Haskell.TH.Quote
 import           Prelude                   hiding (takeWhile)
 
-extendRecord = QuasiQuoter
+extendQQ = QuasiQuoter
   { quoteDec = extendD
-  , quoteExp = undefined
-  , quotePat = undefined
-  , quoteType = undefined
+  , quoteExp = error "only quoteDec is exist"
+  , quotePat = error "only quoteDec is exist"
+  , quoteType = error "only quoteDec is exist"
   }
 
 extendD :: String -> Q [Dec]
 extendD input =  do
   let s = either error id $ parseOnly unionRecordParser $ pack input
-  liftIO $ print s
-  ss <- forM (elems s) $ \case
-    SupType r -> do
-      sub <- maybe (error $ "not in scope type " <> r) pure =<< lookupTypeName r
-      TyConI dec@(DataD ctx name bndrs kind ((RecC _ rtys):_) _) <- reify sub
-      pure (ctx, bndrs, rtys)
-    Fields fs -> do
-      rtys <- forM fs $ \f -> do
-        let n = mkName (fst f)
-        t <- maybe (error $ "not in scope type " <> (snd f)) pure =<< lookupTypeName (snd f)
-        pure $ (n, (Bang NoSourceUnpackedness NoSourceStrictness), ConT t)
-      pure ([], [], rtys)
+  ss <- mapM mkRecordElem (elems s)
+  derivs' <- DerivClause Nothing <$> mapM mkDerive (derivs s)
   name' <- newName (name s)
   rname' <- newName (name s)
-  dcons <- forM (derivs s) $ \d -> do
-    c <- maybe (error $ "not in scope class " <> d) pure =<< lookupTypeName d
-    pure $ ConT c
-  let derivs' = DerivClause Nothing dcons
-  -- pure [DataD cxt name' bndrs kind [(RecC rname' rtys)] [derivs']]
-  liftIO $ print $ ss
-  pure [DataD (join $ fmap fst3 ss) name' (join $ fmap snd3 ss) Nothing [RecC rname' (join $ fmap trd3 ss)] [derivs']]
+  pure [DataD (ss >>= fst3) name' (ss >>= snd3) Nothing [RecC rname' (ss >>= trd3)] [derivs']]
+  where
+    mkRecordElem (SupType r) = do
+      sub <- lookupType' r
+      TyConI (DataD ctx _ bndrs _ (RecC _ rtys:_) _) <- reify sub
+      pure (ctx, bndrs, rtys)
+    mkRecordElem (Fields fs) = do
+      rtys <- forM fs $ \f -> do
+        let n = mkName (fst f)
+        t <- lookupType' (snd f)
+        pure (n, Bang NoSourceUnpackedness NoSourceStrictness, ConT t) -- todo: impl bang
+      pure ([], [], rtys)
+    mkDerive d = ConT <$> lookupType' d
 
+lookupType' :: String -> Q Name
+lookupType' tn = lookupTypeName tn >>= maybe (error $ "not in scope type " <> tn) pure
+
+fst3 :: (a, b, c) -> a
 fst3 (x,_,_) = x
+
+snd3 :: (a, b, c) -> b
 snd3 (_,x,_) = x
+
+trd3 :: (a, b, c) -> c
 trd3 (_,_,x) = x
 
 data UnionRecord = UnionRecord
@@ -61,31 +64,37 @@ data UnionRecord = UnionRecord
 data Element = SupType String | Fields [(String, String)]
   deriving (Show, Eq)
 
+unionRecordParser :: Parser UnionRecord
 unionRecordParser = do
-  spaces
-  string "data"
-  spaces
+  spaces *> string "data"
+  spaces1
   n <- many1 safeN
   spaces
   char '='
-  let pname = spaces *> many1 safeN <* spaces
-  let f = do
-        n <- pname
+  let p_name = spaces *> many1 safeN <* spaces
+  let p_singleField = do
+        n <- p_name
         string "::"
-        t <- pname
+        t <- p_name
         pure (n, t)
   let precord = do
         spaces *> char '{'
-        fs <- f `sepBy` char ','
+        fs <- p_singleField `sepBy` char ','
         spaces *> char '}'
         spaces
         pure $ Fields fs
-  rs <- (precord <|> (SupType <$> pname)) `sepBy` string "<>"
+  rs <- (precord <|> (SupType <$> p_name)) `sepBy` string "<>"
   ds <- option [] $ do
     spaces *> string "deriving" <* spaces
-    char '(' *> (pname `sepBy` char ',') <* char ')'
-  endOfInput
+    char '(' *> (p_name `sepBy` char ',') <* char ')'
+  spaces *> endOfInput
   pure $ UnionRecord n rs ds
 
+spaces :: Parser String
 spaces = many space
+
+spaces1 :: Parser String
+spaces1 = many1 space
+
+safeN :: Parser Char
 safeN = letter <|> digit <|> choice (char <$> "_'.")
